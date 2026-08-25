@@ -8,95 +8,152 @@ void main() {
 class MainApp extends StatelessWidget {
   // Định nghĩa một widget không thay đổi trạng thái (StatelessWidget) có tên là MainApp.
   const MainApp({super.key});
-  // Constructor  của mainApp, sử dụng 'const' để tối ưu hóa hiệu suất và 'super.key' để truyền key cho widget cha.
-  // match- parent --> container
-  // wrap-content --> text, card, button, image, icon, textfield, listview, gridview
+
   @override
   Widget build(BuildContext context) {
-    // Phương thức build trả về giao diện của widget
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Profile Card')),
         body: Center(
-          child: Container(
-            width: 360,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white70,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Column(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const CircleAvatar(
-                  radius: 72,
-                  backgroundImage: NetworkImage(
-                    'https://thethaovanhoa.mediacdn.vn/372676912336973824/2022/12/22/4-1671640734684233671117-1671684529811-1671684530300552630920.jpg',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Nguyễn Văn A',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 18,
-                      height: 1.4,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextSpan(text: 'Lập trình viên Flutter với'),
-                      TextSpan(
-                        text: ' 5 năm kinh nghiệm. ',
+                      const Text(
+                        'Strawberry Pavlova',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.green,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'serif',
                         ),
                       ),
-                      TextSpan(text: 'Chuyên về '),
-                      TextSpan(
-                        text: 'UI/UX & Backend.',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Pavlova is a meringue-based dessert named after the '
+                        'Russian ballerina Anna Pavlova. Pavlova features a '
+                        'crisp crust and soft, light inside, topped with '
+                        'fruit and whipped cream.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 13, fontFamily: 'serif'),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Khung viền đỏ chứa đánh giá + thông tin nấu ăn
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.red, width: 2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.star, size: 12, color: Colors.black),
+                                SizedBox(width: 2),
+                                Icon(Icons.star, size: 12, color: Colors.black),
+                                SizedBox(width: 2),
+                                Icon(Icons.star, size: 12, color: Colors.black),
+                                SizedBox(width: 2),
+                                Icon(Icons.star, size: 12, color: Colors.black),
+                                SizedBox(width: 2),
+                                Icon(Icons.star, size: 12, color: Colors.black),
+                                SizedBox(width: 8),
+                                Text(
+                                  '170 Reviews',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Hàng PREP / COOK / FEEDS
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: const [
+                                _InfoItem(
+                                  icon: Icons.description_outlined,
+                                  label: 'PREP:',
+                                  value: '25 min',
+                                ),
+                                _InfoItem(
+                                  icon: Icons.access_time,
+                                  label: 'COOK:',
+                                  value: '1 hr',
+                                ),
+                                _InfoItem(
+                                  icon: Icons.restaurant,
+                                  label: 'FEEDS:',
+                                  value: '4-6',
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 24),
-                    SizedBox(width: 8),
-                    Text(
-                      'Đang hoạt động',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
+
+                const SizedBox(width: 16),
+
+                // ----- CỘT PHẢI: hình ảnh -----
+                Expanded( // Đảm bảo widget con có thể mở rộng
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1597822154096-LK0WD8P39LYLJAG0PXJ6/chup-anh-thuc-an-1.jpg',
+                      width: 220,
+                      height: 260,
+                      fit: BoxFit.cover, // Đảm bảo hình ảnh không bị thu nhỏ
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+// Widget con dùng lại cho mỗi mục PREP / COOK / FEEDS
+class _InfoItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, size: 20, color: Colors.green),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        ),
+        Text(value, style: const TextStyle(fontSize: 12)),
+      ],
     );
   }
 }
