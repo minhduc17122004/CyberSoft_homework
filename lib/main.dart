@@ -11,6 +11,40 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> users = [
+      {
+        'name': 'User 1',
+        'subtitle': 'This is user 1',
+        'phone': '123-456-7890',
+        'status': 'Online',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      },
+      {
+        'name': 'User 2',
+        'subtitle': 'This is user 2',
+        'phone': '123-456-7890',
+        'status': 'Offline',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      },
+      {
+        'name': 'User 3',
+        'subtitle': 'This is user 3',
+        'phone': '123-456-7890',
+        'status': 'Busy',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      },
+      {
+        'name': 'User 4',
+        'subtitle': 'This is user 4',
+        'phone': '123-456-7890',
+        'status': 'Away',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      },
+    ];
     return Scaffold(
       backgroundColor: const Color(0xFFFBF5FA),
       appBar: AppBar(
@@ -21,32 +55,29 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black87),
         ),
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            SizedBox(height: 24),
-            AvatarWithStatus(imageUrl: 'https://i.pravatar.cc/150?img=12'),
-            SizedBox(height: 24),
-            FavoriteCard(
-              imageUrl: 'https://picsum.photos/id/1015/800/500',
-              title: 'Bãi biển Maldives',
-              subtitle: 'Một trong những điểm du lịch đẹp nhất thế giới!',
+      body: ListView.separated(
+        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(height: 16); // khoang cách giữa các card
+        },
+        itemBuilder: (BuildContext context, int index) {
+          final user = users[index];
+
+          return ListTile(
+            leading: AvatarWithStatus(imageUrl: user['imageUrl']),
+            title: Text(user['name']),
+            subtitle: Text(
+              '${user['subtitle']} | ${user['phone']} | ${user['status']}',
             ),
-            SizedBox(height: 16),
-            FavoriteCard(
-              imageUrl: 'https://picsum.photos/id/1015/800/500',
-              title: 'Bãi biển Maldives',
-              subtitle: 'Một trong những điểm du lịch đẹp nhất thế giới!',
-            ),
-          ],
-        ),
+          );
+        },
+        itemCount: users.length, // Số lượng card hiển thị
       ),
     );
   }
 }
 
-// ---- Avatar có chấm xanh "online" ----
 class AvatarWithStatus extends StatelessWidget {
   final String imageUrl;
 
@@ -97,7 +128,7 @@ class FavoriteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -122,7 +153,7 @@ class FavoriteCard extends StatelessWidget {
                 right: 10,
                 child: CircleAvatar(
                   radius: 16,
-                  backgroundColor: Colors.black.withOpacity(0.4),
+                  backgroundColor: Colors.black.withValues(alpha: 0.4),
                   child: const Icon(
                     Icons.favorite_border,
                     color: Colors.white,
