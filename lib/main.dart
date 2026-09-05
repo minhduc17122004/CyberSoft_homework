@@ -1,180 +1,146 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-    const MaterialApp(debugShowCheckedModeBanner: false, home: ProfileScreen()),
-  );
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: PhotosScreen()));
 }
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class PhotosScreen extends StatelessWidget {
+  PhotosScreen({super.key});
+
+  // ---- DỮ LIỆU GIẢ LẬP (list) ----
+  final List<String> photoUrls = List.generate(
+    40,
+    (index) => 'https://picsum.photos/id/${1011 + index}/200/200',
+  );
+
+  final List<Map<String, String>> recentDays = const [
+    {'label': 'Today', 'image': 'https://picsum.photos/id/1035/300/300'},
+    {'label': 'Mar 15', 'image': 'https://picsum.photos/id/1027/300/300'},
+    {'label': 'Feb 20', 'image': 'https://picsum.photos/id/1025/300/300'},
+    {'label': 'Jan 05', 'image': 'https://picsum.photos/id/1041/300/300'},
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> users = [
-      {
-        'name': 'User 1',
-        'subtitle': 'This is user 1',
-        'phone': '123-456-7890',
-        'status': 'Online',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-      },
-      {
-        'name': 'User 2',
-        'subtitle': 'This is user 2',
-        'phone': '123-456-7890',
-        'status': 'Offline',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-      },
-      {
-        'name': 'User 3',
-        'subtitle': 'This is user 3',
-        'phone': '123-456-7890',
-        'status': 'Busy',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-      },
-      {
-        'name': 'User 4',
-        'subtitle': 'This is user 4',
-        'phone': '123-456-7890',
-        'status': 'Away',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-      },
-    ];
     return Scaffold(
-      backgroundColor: const Color(0xFFFBF5FA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFBF5FA),
-        elevation: 0,
-        title: const Text(
-          'Profile & Favorite Card',
-          style: TextStyle(color: Colors.black87),
-        ),
-      ),
-      body: ListView.separated(
-        scrollDirection: Axis.vertical,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(height: 16); // khoang cách giữa các card
-        },
-        itemBuilder: (BuildContext context, int index) {
-          final user = users[index];
-
-          return ListTile(
-            leading: AvatarWithStatus(imageUrl: user['imageUrl']),
-            title: Text(user['name']),
-            subtitle: Text(
-              '${user['subtitle']} | ${user['phone']} | ${user['status']}',
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: ListView(
+          // ListView cha để cuộn toàn bộ trang
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 8),
+            Text(
+              '${photoUrls.length} Items',
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
-          );
-        },
-        itemCount: users.length, // Số lượng card hiển thị
+            const SizedBox(height: 8),
+
+            // ---- GRIDVIEW LOAD ĐỘNG TỪ LIST ----
+            GridView.builder(
+              shrinkWrap: true, // để GridView nằm gọn trong ListView
+              physics: const NeverScrollableScrollPhysics(), // không cuộn riêng
+              itemCount: photoUrls.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, // 4 ảnh/hàng giống hình
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              itemBuilder: (context, index) {
+                return Image.network(photoUrls[index], fit: BoxFit.cover);
+              },
+            ),
+
+            const SizedBox(height: 20),
+            const Text(
+              'Recent Days',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // ---- LISTVIEW NGANG LOAD ĐỘNG TỪ LIST ----
+            SizedBox(
+              height: 150,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: recentDays.length,
+                itemBuilder: (context, index) {
+                  final day = recentDays[index];
+                  return Container(
+                    width: 110,
+                    margin: const EdgeInsets.only(right: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(day['image']!, fit: BoxFit.cover),
+                          Positioned(
+                            left: 8,
+                            bottom: 8,
+                            child: Text(
+                              day['label']!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(color: Colors.black, blurRadius: 4),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
-}
 
-class AvatarWithStatus extends StatelessWidget {
-  final String imageUrl;
-
-  const AvatarWithStatus({super.key, required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
+  // ---- HEADER: Photos, Search, Select, Avatar ----
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CircleAvatar(radius: 42, backgroundImage: NetworkImage(imageUrl)),
-        Positioned(
-          bottom: 2,
-          right: 2,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-            ),
+        const Text(
+          'Photos',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.blue,
+              child: const Icon(Icons.search, color: Colors.white),
+            ),
+            const SizedBox(width: 10),
+            TextButton(
+              onPressed: () {},
+              child: const Text('Select', style: TextStyle(color: Colors.blue)),
+            ),
+            const SizedBox(width: 6),
+            const CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage('https://i.pravatar.cc/150'),
+            ),
+          ],
         ),
       ],
-    );
-  }
-}
-
-// ---- Card ảnh có icon trái tim + tiêu đề + mô tả ----
-class FavoriteCard extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String subtitle;
-
-  const FavoriteCard({
-    super.key,
-    required this.imageUrl,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  imageUrl,
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.black.withValues(alpha: 0.4),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
-          ),
-        ],
-      ),
     );
   }
 }
