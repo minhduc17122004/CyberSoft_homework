@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:bt_oop/screens/onboarding_screen.dart';
+import 'screens/explore_screen.dart';
 
 void main() {
-  runApp(const GroceryApp());
+  runApp(const ExploreHomeApp());
 }
 
-class GroceryApp extends StatelessWidget {
-  const GroceryApp({super.key});
+class ExploreHomeApp extends StatelessWidget {
+  const ExploreHomeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Grocery App',
+      title: 'Explore & Home',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Roboto',
-        colorSchemeSeed: const Color(0xFF5B9A3B),
+        colorSchemeSeed: const Color(0xFF3E8AA0),
         useMaterial3: true,
       ),
-      home: const OnboardingScreen(),
+      home: const ExploreScreen(),
     );
   }
 }

@@ -1,62 +1,76 @@
 import 'package:flutter/material.dart';
-import '../models/category.dart';
-import 'package:bt_oop/widgets/balance_header.dart';
-import 'package:bt_oop/widgets/promo_banner.dart';
-import 'package:bt_oop/widgets/category_card.dart';
-import 'fruit_list_screen.dart';
+import '../models/quick_category.dart';
+import '../models/best_seller_product.dart';
+import '../widgets/home_top_bar.dart';
+import '../widgets/search_bar_with_filter.dart';
+import '../widgets/banner_carousel.dart';
+import '../widgets/quick_category_grid.dart';
+import '../widgets/best_seller_section.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  /// Passed in when Home is reached by tapping a category on the
+  /// Explore screen, so the search box already shows what the user
+  /// picked instead of landing empty.
+  final String? initialSearchQuery;
 
-  void _onCategoryTap(BuildContext context, Category category) {
-    // Only "Fruit" has a real destination screen in this exercise;
-    // other categories could get their own screens the same way.
-    if (category.name == 'Fruit') {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const FruitListScreen()));
-    }
+  const HomeScreen({super.key, this.initialSearchQuery});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(
+      text: widget.initialSearchQuery ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final canPop = Navigator.of(context).canPop();
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F1),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BalanceHeader(balance: 1700.00),
-              const SizedBox(height: 24),
-              const PromoBanner(
-                title: 'Buy Orange 10 Kg',
-                subtitle: 'Get discount 25%',
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'For you',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: GridView.builder(
-                  itemCount: homeCategories.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.3,
+              // Only shown when Home was pushed from Explore, so the
+              // user has an obvious way back.
+              if (canPop)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                  itemBuilder: (context, index) {
-                    final category = homeCategories[index];
-                    return CategoryCard(
-                      category: category,
-                      onTap: () => _onCategoryTap(context, category),
-                    );
-                  },
                 ),
+              const HomeTopBar(userName: 'Samantha William', cartCount: 3),
+              const SizedBox(height: 20),
+              SearchBarWithFilter(controller: _searchController),
+              const SizedBox(height: 20),
+              const BannerCarousel(),
+              const SizedBox(height: 24),
+              QuickCategoryGrid(categories: quickCategories),
+              const SizedBox(height: 24),
+              BestSellerSection(
+                products: bestSellerProducts,
+                onSeeAll: () {},
               ),
             ],
           ),
