@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
-import 'screens/color_changer_screen.dart';
+import 'screens/key_lab_screen.dart';
+import 'screens/test.dart';
 
 void main() {
-  runApp(const StatefulColorApp());
+  runApp(const KeyLabApp());
 }
 
-class StatefulColorApp extends StatelessWidget {
-  const StatefulColorApp({super.key});
+class KeyLabApp extends StatelessWidget {
+  const KeyLabApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stateful Color Exercise',
+      title: 'Navigation Test',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
-      home: const ColorChangerScreen(),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+      initialRoute: '/',
+      routes: {
+        '/': (_) => const TestScreen(),
+        '/key-lab': (_) => const KeyLabScreen(),
+        '/example': (_) => const NavigationExampleScreen(),
+        '/arguments': (_) => const NavigationArgumentsScreen(),
+        '/child-result': (_) => const ChildResultScreen(),
+      },
     );
   }
 }
