@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/database/DAO/users_dao.dart';
 
 class BaiTapDanhBa extends StatefulWidget {
   const BaiTapDanhBa({super.key});
@@ -8,39 +9,114 @@ class BaiTapDanhBa extends StatefulWidget {
 }
 
 class _BaiTapDanhBaState extends State<BaiTapDanhBa> {
-  final List<Map<String, String>> listUser = [
-    {
-      'name': 'Nguyen Van A',
-      'email': 'nguyenvana@example.com',
-      'country': 'Vietnam',
-    },
-    {
-      'name': 'Tran Thi B',
-      'email': 'tranthib@example.com',
-      'country': 'Vietnam',
-    },
-    {'name': 'Le Van C', 'email': 'levanc@example.com', 'country': 'Vietnam'},
-    {
-      'name': 'Pham Thi D',
-      'email': 'phamthid@example.com',
-      'country': 'Vietnam',
-    },
-    {
-      'name': 'Hoang Van E',
-      'email': 'hoangvane@example.com',
-      'country': 'Vietnam',
-    },
-    {'name': 'Bui Thi F', 'email': 'buithif@example.com', 'country': 'Vietnam'},
-    {
-      'name': 'Dang Van G',
-      'email': 'dangvang@example.com',
-      'country': 'Vietnam',
-    },
-    {'name': 'Vu Thi H', 'email': 'vuthih@example.com', 'country': 'Vietnam'},
-    {'name': 'Do Van I', 'email': 'dovani@example.com', 'country': 'Vietnam'},
-    {'name': 'Ngo Thi J', 'email': 'ngothij@example.com', 'country': 'Vietnam'},
-    {'name': 'John Smith', 'email': 'johnsmith@example.com', 'country': 'USA'},
-  ];
+  var listUser = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
+
+  void loadData() async {
+    var listUserDB = await selectDataUser();
+    setState(() {
+      listUser = listUserDB;
+    });
+  }
+
+  void showUserModal(BuildContext context, {Map<String, dynamic>? user}) {
+    final isEditing = user != null;
+    final nameController = TextEditingController(text: user?['name'] ?? '');
+    final emailController = TextEditingController(text: user?['email'] ?? '');
+    final ageController = TextEditingController(
+      text: user != null ? user['age'].toString() : '',
+    );
+
+    showModalBottomSheet<void>(
+      showDragHandle: true,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 500,
+          child: ScaffoldMessenger(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: Builder(
+                builder: (sheetContext) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Họ tên",
+                            border: OutlineInputBorder(),
+                          ),
+                          controller: nameController,
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            border: OutlineInputBorder(),
+                          ),
+                          controller: emailController,
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Tuổi",
+                            border: OutlineInputBorder(),
+                          ),
+                          controller: ageController,
+                        ),
+                        ElevatedButton(
+                          child: const Text('Lưu'),
+                          onPressed: () async {
+                            final name = nameController.text.trim();
+                            final email = emailController.text.trim();
+                            final age =
+                                int.tryParse(ageController.text.trim()) ?? 0;
+                            if (name.isEmpty || email.isEmpty || age <= 0) {
+                              ScaffoldMessenger.of(sheetContext).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Vui lòng nhập đầy đủ thông tin hợp lệ.',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                              return;
+                            }
+                            var newUser = {
+                              "name": name,
+                              "email": email,
+                              "age": age,
+                            };
+                            if (user == null) {
+                              await insertDataUser(newUser);
+                            } else {
+                              await updateDataUser(user['id'], newUser);
+                            }
+                            loadData();
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +125,14 @@ class _BaiTapDanhBaState extends State<BaiTapDanhBa> {
         title: const Text('Danh bạ'),
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showUserModal(context);
+            },
+            icon: Icon(Icons.add),
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: listUser.length,
@@ -66,12 +150,25 @@ class _BaiTapDanhBaState extends State<BaiTapDanhBa> {
               ),
             ),
             title: Text(item['name']!),
-            subtitle: Text('${item['email']} | ${item['country']}'),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Bạn chọn ${item['name']}')),
-              );
-            },
+            subtitle: Text('${item['email']} | ${item['age']}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    showUserModal(context, user: item);
+                  },
+                  icon: Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () {
+                    deleteDataUser(item['id']);
+                    loadData();
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+            ),
           );
         },
       ),
